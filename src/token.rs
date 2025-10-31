@@ -1,15 +1,18 @@
+//! Defines all the tokens to be used in other parts of the program.
 #![allow(unused)]
 
 use std::{collections::HashMap, fmt};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum Token {
-    Equals,
+    DoubleEqualSign,
     NotEquals,
+    GreaterThanEquals,
+    LessThanEquals,
     ThickArrow,
     Arrow,
     LArrow,
-    Assign,
+    EqualSign,
     Plus,
     Asterisk,
     Minus,
@@ -18,11 +21,11 @@ pub enum Token {
     LCurly,
     LSquare,
     LParens,
-    LAngle,
+    LT,
     RCurly,
     RSquare,
     RParens,
-    RAngle,
+    GT,
     Comma,
     If,
     Else,
@@ -62,6 +65,54 @@ impl Token {
             None
         }
     }
+    pub fn to_string(&self) -> String {
+        use Token::*;
+        match self {
+            Identifier(id) => id.clone(),
+            Number(n) => n.to_string(),
+            DoubleEqualSign => "==".to_string(),
+            NotEquals => "!=".to_string(),
+            GreaterThanEquals => ">=".to_string(),
+            LessThanEquals => "<=".to_string(),
+            ThickArrow => "=>".to_string(),
+            Arrow => "->".to_string(),
+            LArrow => "<-".to_string(),
+            EqualSign => "=".to_string(),
+            Plus => "+".to_string(),
+            Asterisk => "*".to_string(),
+            Minus => "-".to_string(),
+            Semicolon => ";".to_string(),
+            Colon => ":".to_string(),
+            LCurly => "{".to_string(),
+            LSquare => "[".to_string(),
+            LParens => "(".to_string(),
+            LT => "<".to_string(),
+            RCurly => "}".to_string(),
+            RSquare => "]".to_string(),
+            RParens => ")".to_string(),
+            GT => ">".to_string(),
+            Comma => ",".to_string(),
+            If => "if".to_string(),
+            Else => "else".to_string(),
+            Let => "let".to_string(),
+            Return => "return".to_string(),
+            True => "true".to_string(),
+            False => "false".to_string(),
+            Fn => "fn".to_string(),
+            SingleQuote => "'".to_string(),
+            DoubleQuote => "\"".to_string(),
+            QuestionMark => "?".to_string(),
+            Bang => "!".to_string(),
+            Slash => "/".to_string(),
+            BackSlash => "\\".to_string(),
+            Space => " ".to_string(),
+            Newline => "\n".to_string(),
+            Tab => "\t".to_string(),
+            CarriageReturn => "\r".to_string(), // This one might be wrong? Maybe "\r\n"?
+            EndOfFile => "\0".to_string(),
+            Illegal => panic!("Tried to stringify an Illegal token."),
+        }
+    }
 }
 
 /// NOTE: This could maybe be a lookup table?
@@ -69,14 +120,14 @@ impl From<&str> for Token {
     fn from(input: &str) -> Token {
         use Token::*;
         match input {
-            "==" => Equals,
+            "==" => DoubleEqualSign,
             "!=" => NotEquals,
-            ">=" => NotEquals,
-            "<=" => NotEquals,
+            ">=" => GreaterThanEquals,
+            "<=" => LessThanEquals,
             "=>" => ThickArrow,
             "->" => Arrow,
             "<-" => LArrow,
-            "=" => Assign,
+            "=" => EqualSign,
             "+" => Plus,
             "*" => Asterisk,
             "-" => Minus,
@@ -85,11 +136,11 @@ impl From<&str> for Token {
             "{" => LCurly,
             "[" => LSquare,
             "(" => LParens,
-            "<" => LAngle,
+            "<" => LT,
             "}" => RCurly,
             "]" => RSquare,
             ")" => RParens,
-            ">" => RAngle,
+            ">" => GT,
             "," => Comma,
             "if" => If,
             "else" => Else,

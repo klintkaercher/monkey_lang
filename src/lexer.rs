@@ -1,9 +1,10 @@
+//! Traverses the characters to produce tokens.
 #![allow(unused)]
 
 use crate::token::*;
-///
+
 /// TODO: Missing some concept of a range for the input[x..y] to pass to token parsing.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Lexer {
     ch: char,
     input: Vec<char>,
@@ -27,7 +28,7 @@ impl Lexer {
             Ok(out)
         }
     }
-    /// TODO: This is copy paste of read_char. fix that and then integrate it.
+
     pub fn peek_char(&mut self) -> char {
         if self.read_pos >= self.input.len() {
             '\0'
@@ -62,16 +63,16 @@ impl Lexer {
             } else if tok == Bang && self.peek_char() == '=' {
                 out = NotEquals;
                 self.read_char();
-            } else if tok == Assign && self.peek_char() == '=' {
-                out = Equals;
+            } else if tok == EqualSign && self.peek_char() == '=' {
+                out = DoubleEqualSign;
                 self.read_char();
-            } else if tok == Assign && self.peek_char() == '>' {
+            } else if tok == EqualSign && self.peek_char() == '>' {
                 out = ThickArrow;
                 self.read_char();
             } else if tok == Minus && self.peek_char() == '>' {
                 out = Arrow;
                 self.read_char();
-            } else if tok == LAngle && self.peek_char() == '-' {
+            } else if tok == LT && self.peek_char() == '-' {
                 out = LArrow;
                 self.read_char();
             } else {
@@ -168,19 +169,19 @@ else {
         .unwrap();
         assert_eq!(lex.next_token(), Let);
         assert_eq!(lex.next_token(), Identifier("five".to_string()));
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), Number(5));
         assert_eq!(lex.next_token(), Semicolon);
 
         assert_eq!(lex.next_token(), Let);
         assert_eq!(lex.next_token(), Identifier("ten".to_string()));
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), Number(10));
         assert_eq!(lex.next_token(), Semicolon);
 
         assert_eq!(lex.next_token(), Let);
         assert_eq!(lex.next_token(), Identifier("add".to_string()));
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), Fn);
         assert_eq!(lex.next_token(), LParens);
         assert_eq!(lex.next_token(), Identifier("x".to_string()));
@@ -197,7 +198,7 @@ else {
 
         assert_eq!(lex.next_token(), Let);
         assert_eq!(lex.next_token(), Identifier("result".to_string()));
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), Identifier("add".to_string()));
         assert_eq!(lex.next_token(), LParens);
         assert_eq!(lex.next_token(), Identifier("five".to_string()));
@@ -213,15 +214,15 @@ else {
         assert_eq!(lex.next_token(), Number(5));
         assert_eq!(lex.next_token(), Semicolon);
         assert_eq!(lex.next_token(), Number(5));
-        assert_eq!(lex.next_token(), LAngle);
+        assert_eq!(lex.next_token(), LT);
         assert_eq!(lex.next_token(), Number(10));
-        assert_eq!(lex.next_token(), RAngle);
+        assert_eq!(lex.next_token(), GT);
         assert_eq!(lex.next_token(), Number(5));
         assert_eq!(lex.next_token(), Semicolon);
         assert_eq!(lex.next_token(), If);
         assert_eq!(lex.next_token(), LParens);
         assert_eq!(lex.next_token(), Number(5));
-        assert_eq!(lex.next_token(), LAngle);
+        assert_eq!(lex.next_token(), LT);
         assert_eq!(lex.next_token(), Number(10));
         assert_eq!(lex.next_token(), RParens);
         assert_eq!(lex.next_token(), LCurly);
@@ -262,7 +263,7 @@ else {
         let mut lex = Lexer::new("+={}()[];:*").unwrap();
         use Token::*;
         assert_eq!(lex.next_token(), Plus);
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), LCurly);
         assert_eq!(lex.next_token(), RCurly);
         assert_eq!(lex.next_token(), LParens);
@@ -280,7 +281,7 @@ else {
 
         let mut lex = Lexer::new("!= == -> <- =>").unwrap();
         assert_eq!(lex.next_token(), NotEquals);
-        assert_eq!(lex.next_token(), Equals);
+        assert_eq!(lex.next_token(), DoubleEqualSign);
         assert_eq!(lex.next_token(), Arrow);
         assert_eq!(lex.next_token(), LArrow);
         assert_eq!(lex.next_token(), ThickArrow);
@@ -295,7 +296,7 @@ else {
         let mut lex = Lexer::new("let x = 5;").unwrap();
         assert_eq!(lex.next_token(), Let);
         assert_eq!(lex.next_token(), Identifier("x".to_string()));
-        assert_eq!(lex.next_token(), Assign);
+        assert_eq!(lex.next_token(), EqualSign);
         assert_eq!(lex.next_token(), Number(5));
         assert_eq!(lex.next_token(), Semicolon);
     }
